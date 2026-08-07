@@ -1,0 +1,27 @@
+# Firebase
+.firebase/
+firebase-debug.log
+*-debug.log
+
+# Node
+node_modules/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# R / stray session files
+.Rhistory
+.RData
+
+# Python leftovers from the earlier prototype
+__pycache__/
+*.py[cod]
+*.db
+*.db-journal

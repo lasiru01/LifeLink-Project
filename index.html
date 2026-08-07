@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeLink — Emergency Blood Donor Matching</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="splashScreen" class="splash-screen">
+  <div class="splash-logo">
+    <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M100 22 C100 22 62 66 62 92 C62 113.196 79.804 130 101 130 C122.196 130 140 113.196 140 92 C140 66 100 22 100 22 Z" fill="#d90429"/>
+      <path d="M84 60 C74 76 70 86 70 94 C70 106.15 79.85 116 92 116" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.35"/>
+    </svg>
+    <div class="splash-text">Life<span>Link</span></div>
+    <div class="splash-tag">Colombo District Pilot</div>
+  </div>
+</div>
+
+<nav class="apple-nav">
+  <div class="nav-content">
+    <a href="#top" class="nav-logo">Life<span>Link</span></a>
+    <span class="nav-tag">Colombo District Pilot</span>
+  </div>
+</nav>
+
+<div id="configBanner" class="config-banner" style="display:none;">
+  <b>Firebase is not connected yet.</b>
+  Open <code>js/config.js</code> and paste your project keys — the steps are in
+  <code>SETUP.md</code>. Until then nothing will save.
+</div>
+
+<header id="top" class="hero-mini">
+  <div class="hero-illustration">
+    <svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="100" cy="70" r="62" fill="#fff5f5"/>
+      <path d="M100 22 C100 22 62 66 62 92 C62 113.196 79.804 130 101 130 C122.196 130 140 113.196 140 92 C140 66 100 22 100 22 Z" fill="#d90429"/>
+      <path d="M100 22 C100 22 62 66 62 92 C62 113.196 79.804 130 101 130" fill="none" stroke="#ffffff" stroke-opacity="0" />
+      <path d="M84 60 C74 76 70 86 70 94 C70 106.15 79.85 116 92 116" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.35"/>
+      <path d="M40 96 L58 96 L66 84 L74 108 L82 92 L88 96 L162 96" fill="none" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+    </svg>
+  </div>
+  <span class="hero-tag">Emergency Blood Matching</span>
+  <h1>Choose how you'd like to continue</h1>
+  <p>One prototype, three roles — pick a tab to explore that experience.</p>
+</header>
+
+<div class="role-tabs-bar">
+  <div class="role-tabs-inner">
+    <button class="role-tab active" data-role="donor"><span class="rt-ic">🩸</span> Donor</button>
+    <button class="role-tab" data-role="hospital"><span class="rt-ic">🏥</span> Hospital</button>
+    <button class="role-tab" data-role="admin"><span class="rt-ic">👨‍💼</span> Admin</button>
+  </div>
+</div>
+
+<main class="role-main">
+
+<!-- DONOR VIEW -->
+<section class="role-view active" id="view-donor">
+  <div class="sub-tabs">
+    <button class="sub-tab active" data-role="donor" data-panel="login">Login</button>
+    <button class="sub-tab" data-role="donor" data-panel="register">Register</button>
+    <button class="sub-tab" data-role="donor" data-panel="profile">My Profile</button>
+    <button class="sub-tab" data-role="donor" data-panel="bloodgroup">Blood Group</button>
+    <button class="sub-tab" data-role="donor" data-panel="history">Donation History</button>
+    <button class="sub-tab" data-role="donor" data-panel="requests">Emergency Requests</button>
+    <button class="sub-tab" data-role="donor" data-panel="notifications">Notifications</button>
+  </div>
+
+  <!-- Register -->
+  <div class="sub-panel" data-role="donor" data-panel="register">
+    <div class="panel-card">
+      <h2>Become a Donor</h2>
+      <p class="panel-sub">Register once. Your document is queued for review — nothing is auto-verified.</p>
+      <form id="donorForm">
+        <div class="form-grid">
+          <div class="input-group"><label>Full Name</label><input type="text" id="fullName" placeholder="Full Name" required></div>
+          <div class="input-group"><label>NIC Number</label><input type="text" id="nicNumber" placeholder="NIC Number" required></div>
+          <div class="input-group"><label>Mobile Number</label><input type="tel" id="phoneNumber" placeholder="Mobile Number" required>
+            <small>Used by the hospital blood bank unit to contact you if you accept a request.</small>
+          </div>
+          <div class="input-group">
+            <label>Blood Group</label>
+            <select id="bloodGroup" required>
+              <option value="" disabled selected>Select Blood Group</option>
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+              <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>District</label>
+            <select id="district" required>
+              <option value="" disabled selected>Select District</option>
+              <option>Colombo</option><option>Gampaha</option><option>Kalutara</option>
+            </select>
+          </div>
+          <div class="input-group full-width">
+            <label>Last Donation Date (optional)</label>
+            <input type="date" id="lastDonated">
+            <small>Used to calculate your 4-month eligibility window. Leave blank if this is your first time.</small>
+          </div>
+          <div class="input-group full-width">
+            <label>Upload Blood Donor Card / Lab Report (optional but recommended)</label>
+            <input type="file" id="verificationDoc" accept="image/*,.pdf">
+            <small>Queued for verification review by an admin — not auto-approved.</small>
+          </div>
+          <div class="consent-box">
+            <input type="checkbox" id="consentCheck">
+            <label for="consentCheck">I understand LifeLink will store my NIC, blood group, donation history, and approximate location to match me with nearby hospital shortage requests. This data is encrypted and I can view, export, or delete it any time.</label>
+          </div>
+        </div>
+        <div class="form-action"><button type="submit" class="apple-btn btn-primary btn-large">Complete Registration</button></div>
+        <div class="inline-msg" id="registerMsg"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Login -->
+  <div class="sub-panel active" data-role="donor" data-panel="login">
+    <div class="panel-card panel-narrow">
+      <h2>Sign In</h2>
+      <p class="panel-sub">Already registered? Enter the NIC you registered with. No password check yet (real auth is a later step).</p>
+      <div class="form-grid">
+        <div class="input-group full-width"><label>NIC Number</label><input type="text" id="loginNIC" placeholder="Enter your registered NIC"></div>
+      </div>
+      <div class="form-action"><button class="apple-btn btn-primary btn-large" id="donorLoginBtn" type="button">Sign In</button></div>
+      <div class="inline-msg" id="donorLoginMsg"></div>
+      <p class="login-switch">New donor? <button type="button" id="goToRegisterBtn" class="link-btn">Register here</button></p>
+    </div>
+  </div>
+
+  <!-- My Profile -->
+  <div class="sub-panel" data-role="donor" data-panel="profile">
+    <div class="panel-card" id="profileEmptyState"><p class="empty-state">You're not logged in. Register or login first to see your profile.</p></div>
+    <div class="panel-card" id="profileCard" style="display:none;">
+      <div class="panel-card-header"><h2>My Profile</h2><span class="status-badge" id="profileVerifiedBadge"></span></div>
+      <div class="profile-row"><span>Name</span><span id="pName">—</span></div>
+      <div class="profile-row"><span>NIC (masked)</span><span id="pNIC">—</span></div>
+      <div class="profile-row"><span>Mobile Number</span><span id="pPhone">—</span></div>
+      <div class="profile-row"><span>Blood Group</span><span id="pBlood">—</span></div>
+      <div class="profile-row"><span>District</span><span id="pDistrict">—</span></div>
+      <div class="profile-row"><span>Verification Status</span><span id="pVerified">—</span></div>
+      <p class="rejection-note" id="pRejectionNote" style="display:none;"></p>
+      <div class="consent-box" style="margin-top:16px;">
+        <input type="checkbox" id="activeToggle" checked>
+        <label for="activeToggle">I'm currently available to donate. Turn this off any time — hospitals only auto-notify donors who are marked active.</label>
+      </div>
+      <div class="data-actions" style="margin-top:18px;">
+        <button class="apple-btn btn-secondary" id="exportDataBtn" type="button">Export my data (.json)</button>
+        <button class="apple-btn btn-danger" id="deleteDataBtn" type="button">Delete my account</button>
+        <button class="apple-btn btn-ghost" id="logoutBtn" type="button">Log out</button>
+      </div>
+      <div class="inline-msg" id="dataMsg"></div>
+    </div>
+  </div>
+
+  <!-- Blood Group / Eligibility -->
+  <div class="sub-panel" data-role="donor" data-panel="bloodgroup">
+    <div class="panel-card" id="bloodGroupEmptyState"><p class="empty-state">Login to see your blood group and eligibility status.</p></div>
+    <div class="panel-card" id="bloodGroupCard" style="display:none;">
+      <h2>Blood Group &amp; Eligibility</h2>
+      <div class="stat-grid" style="margin-top:18px;">
+        <div class="stat-card accent"><div class="stat-label">Blood Group</div><div class="stat-value" id="bgGroup">—</div><div class="stat-sub">registered group</div></div>
+        <div class="stat-card"><div class="stat-label">Matching Eligibility</div><div class="stat-value" id="bgEligible" style="font-size:1.2rem;">—</div><div class="stat-sub" id="bgEligibleSub">—</div></div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="eligibilityBar" style="width:0%"></div></div>
+      <p class="eligibility-note" id="eligibilityNote"></p>
+      <div class="demo-tools">
+        <p>Pilot demo tool</p>
+        <button class="apple-btn btn-ghost btn-small" id="simulateVerifyBtn" type="button">Simulate NBTS verification</button>
+        <p class="demo-fine">In production this happens through NBTS/admin review, never automatically.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Donation History -->
+  <div class="sub-panel" data-role="donor" data-panel="history">
+    <div class="panel-card" id="historyEmptyState"><p class="empty-state">Login to see your donation history.</p></div>
+    <div class="panel-card" id="historyCard" style="display:none;">
+      <div class="panel-card-header"><h2>Donation History</h2><button class="apple-btn btn-ghost btn-small" id="logDonationBtn" type="button">Log a past donation (demo)</button></div>
+      <div id="donationHistoryList"></div>
+    </div>
+  </div>
+
+  <!-- Emergency Requests -->
+  <div class="sub-panel" data-role="donor" data-panel="requests">
+    <div class="panel-card" id="requestsLockedState"><p class="empty-state">Sign in to view live emergency blood requests near you.</p></div>
+    <div class="panel-card" id="requestsUnlockedState" style="display:none;">
+      <div class="panel-card-header"><h2>Emergency Requests</h2><span class="hint">Accept or decline — only matching, eligible, verified donors can accept</span></div>
+      <div id="donorAlertList"></div>
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  <div class="sub-panel" data-role="donor" data-panel="notifications">
+    <div class="panel-card">
+      <h2>Notifications</h2>
+      <div id="donorNotifList" class="notif-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOSPITAL VIEW -->
+<section class="role-view" id="view-hospital">
+  <div class="sub-tabs">
+    <button class="sub-tab active" data-role="hospital" data-panel="login">Login</button>
+    <button class="sub-tab" data-role="hospital" data-panel="dashboard">Dashboard</button>
+    <button class="sub-tab" data-role="hospital" data-panel="inventory">Blood Inventory</button>
+    <button class="sub-tab" data-role="hospital" data-panel="create">Create Blood Request</button>
+    <button class="sub-tab" data-role="hospital" data-panel="matching">View Matching Donors</button>
+    <button class="sub-tab" data-role="hospital" data-panel="notified">Notified Donors</button>
+    <button class="sub-tab" data-role="hospital" data-panel="history">Request History</button>
+  </div>
+
+  <!-- Login -->
+  <div class="sub-panel active" data-role="hospital" data-panel="login">
+    <div class="panel-card panel-narrow">
+      <h2>Hospital Staff Login</h2>
+      <p class="panel-sub">Only the blood bank unit head, or staff they've authorised, can sign in.</p>
+      <div class="form-grid">
+        <div class="input-group full-width"><label>Authorisation Code</label><input type="text" id="hospAuthCode" placeholder="Authorisation Code"></div>
+      </div>
+      <div class="form-action"><button class="apple-btn btn-primary btn-large" id="hospLoginBtn" type="button">Login</button></div>
+      <div class="inline-msg" id="hospLoginMsg"></div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="sub-panel" data-role="hospital" data-panel="dashboard">
+    <div class="panel-card" id="hospDashLocked"><p class="empty-state">Login first to view your dashboard.</p></div>
+    <div id="hospDashUnlocked" style="display:none;">
+      <div class="stat-grid" id="hospStatGrid"></div>
+    </div>
+  </div>
+
+  <!-- Blood Inventory -->
+  <div class="sub-panel" data-role="hospital" data-panel="inventory">
+    <div class="panel-card" id="hospInvLocked"><p class="empty-state">Login first to manage blood inventory.</p></div>
+    <div class="panel-card" id="hospInvUnlocked" style="display:none;">
+      <div class="panel-card-header"><h2>Blood Inventory</h2><span class="hint">Click + / − to update stock</span></div>
+      <div class="inventory-grid" id="hospInventoryGrid"></div>
+    </div>
+  </div>
+
+  <!-- Create Blood Request -->
+  <div class="sub-panel" data-role="hospital" data-panel="create">
+    <div class="panel-card panel-narrow" id="hospCreateLocked"><p class="empty-state">Login first to broadcast a shortage request.</p></div>
+    <div class="panel-card panel-narrow" id="hospCreateUnlocked" style="display:none;">
+      <h2>Create Blood Request</h2>
+      <div class="form-grid">
+        <div class="input-group"><label>Blood Group Needed</label>
+          <select id="reqBloodGroup"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select>
+        </div>
+        <div class="input-group"><label>Urgency</label>
+          <select id="reqUrgency"><option value="CRITICAL">Critical</option><option value="MODERATE">Moderate</option></select>
+        </div>
+      </div>
+      <div class="form-action"><button class="apple-btn btn-primary btn-large" id="createRequestBtn" type="button">Broadcast Shortage Alert</button></div>
+      <div class="inline-msg" id="createRequestMsg"></div>
+    </div>
+  </div>
+
+  <!-- View Matching Donors -->
+  <div class="sub-panel" data-role="hospital" data-panel="matching">
+    <div class="panel-card" id="hospMatchLocked"><p class="empty-state">Login first to view matching donors.</p></div>
+    <div class="panel-card" id="hospMatchUnlocked" style="display:none;">
+      <div class="panel-card-header"><h2>Matching Donors</h2>
+        <select id="matchRequestSelect" class="mini-select"></select>
+      </div>
+      <p class="hint" style="margin-bottom:14px;">A donor is auto-notified only when all checks pass: verified, blood group, district, active status, donation-date eligibility, and 24h notification cooldown.</p>
+      <div id="matchingDonorsList"></div>
+    </div>
+  </div>
+
+  <!-- Notified Donors -->
+  <div class="sub-panel" data-role="hospital" data-panel="notified">
+    <div class="panel-card" id="hospNotifiedLocked"><p class="empty-state">Login first to view notified donors.</p></div>
+    <div class="panel-card" id="hospNotifiedUnlocked" style="display:none;">
+      <div class="panel-card-header"><h2>Notified Donors</h2><span class="hint">Donors who passed all checks and were auto-notified per request</span></div>
+      <div id="notifiedDonorsList"></div>
+    </div>
+  </div>
+
+  <!-- Request History -->
+  <div class="sub-panel" data-role="hospital" data-panel="history">
+    <div class="panel-card" id="hospHistLocked"><p class="empty-state">Login first to view your hospital's request history.</p></div>
+    <div class="panel-card" id="hospHistUnlocked" style="display:none;">
+      <h2>Request History</h2>
+      <div id="hospRequestHistoryList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ADMIN VIEW -->
+<section class="role-view" id="view-admin">
+  <div class="sub-tabs">
+    <button class="sub-tab active" data-role="admin" data-panel="login">Login</button>
+    <button class="sub-tab" data-role="admin" data-panel="hospitals">Manage Hospitals</button>
+    <button class="sub-tab" data-role="admin" data-panel="verify">Verify Donors</button>
+    <button class="sub-tab" data-role="admin" data-panel="reports">Reports</button>
+    <button class="sub-tab" data-role="admin" data-panel="users">Users</button>
+    <button class="sub-tab" data-role="admin" data-panel="analytics">Analytics</button>
+  </div>
+
+  <!-- Login -->
+  <div class="sub-panel active" data-role="admin" data-panel="login">
+
+    <!-- First run only: choose the administrator email and password -->
+    <div class="panel-card panel-narrow" id="adminSetupBlock" style="display:none;">
+      <h2>Create the Administrator</h2>
+      <p class="panel-sub">No administrator exists yet. Choose the email and password you want to use — this can only be done once.</p>
+      <div class="form-grid">
+        <div class="input-group full-width"><label>Admin Email</label><input type="email" id="setupEmail" placeholder="admin@lifelink.lk"></div>
+        <div class="input-group full-width"><label>Password</label><input type="password" id="setupPassword" placeholder="At least 6 characters"></div>
+        <div class="input-group full-width"><label>Confirm Password</label><input type="password" id="setupPassword2" placeholder="Type it again"></div>
+      </div>
+      <div class="form-action"><button class="apple-btn btn-primary btn-large" id="adminSetupBtn" type="button">Create Administrator</button></div>
+      <div class="inline-msg" id="adminSetupMsg"></div>
+      <p class="login-switch">Already have an admin account? <button type="button" id="showAdminLoginBtn" class="link-btn">Sign in instead</button></p>
+      <p class="demo-fine">Your password is stored by Firebase Authentication, never in this page's code.</p>
+    </div>
+
+    <!-- Shown while an administrator is signed in -->
+    <div class="panel-card panel-narrow" id="adminSignedInBlock" style="display:none;">
+      <div class="panel-card-header"><h2>Signed in as Admin</h2><span class="status-badge status-verified">Active</span></div>
+      <p class="panel-sub" id="adminSignedInEmail">—</p>
+      <p class="hint">Your session stays active until you sign out, even if you refresh the page.</p>
+      <div class="form-action"><button class="apple-btn btn-ghost" id="adminSignOutBtn" type="button">Sign out</button></div>
+    </div>
+
+    <div class="panel-card panel-narrow" id="adminLoginBlock">
+      <h2>Admin Sign In</h2>
+      <p class="panel-sub">Restricted access. Checked by Firebase Authentication, never in the page source.</p>
+      <div class="form-grid">
+        <div class="input-group full-width"><label>Admin Email</label><input type="email" id="adminEmail" placeholder="admin@lifelink.lk"></div>
+        <div class="input-group full-width"><label>Admin Password</label><input type="password" id="adminPassword" placeholder="Enter admin password"></div>
+      </div>
+      <div class="form-action"><button class="apple-btn btn-primary btn-large" id="adminLoginBtn" type="button">Sign In</button></div>
+      <div class="inline-msg" id="adminLoginMsg"></div>
+      <p class="login-switch">First time? <button type="button" id="showAdminSetupBtn" class="link-btn">Create the administrator</button></p>
+    </div>
+  </div>
+
+  <!-- Manage Hospitals -->
+  <div class="sub-panel" data-role="admin" data-panel="hospitals">
+    <div class="panel-card">
+      <div class="panel-card-header"><h2>Manage Hospitals</h2><span class="hint">Authorisation codes issued per hospital</span></div>
+      <div id="adminHospitalList"></div>
+      <div class="form-grid" style="margin-top:20px;">
+        <div class="input-group"><label>Hospital Name</label><input type="text" id="newHospName" placeholder="Hospital Name"></div>
+        <div class="input-group"><label>Authorisation Code</label><input type="text" id="newHospCode" placeholder="Authorisation Code"></div>
+        <div class="input-group full-width"><label>District</label>
+          <select id="newHospDistrict">
+            <option value="" disabled selected>Select District</option>
+            <option>Colombo</option><option>Gampaha</option><option>Kalutara</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-action"><button class="apple-btn btn-primary" id="addHospitalBtn" type="button">Add Hospital</button></div>
+      <div class="inline-msg" id="addHospitalMsg"></div>
+    </div>
+  </div>
+
+  <!-- Verify Donors -->
+  <div class="sub-panel" data-role="admin" data-panel="verify">
+    <div class="panel-card">
+      <div class="panel-card-header"><h2>Verify Donors</h2><span class="hint">Review the uploaded document, then approve or reject</span></div>
+      <div id="adminVerifyList"></div>
+    </div>
+  </div>
+
+  <!-- Reports -->
+  <div class="sub-panel" data-role="admin" data-panel="reports">
+    <div class="panel-card">
+      <h2>Reports</h2>
+      <p class="panel-sub">Pilot summary — Colombo District</p>
+      <div id="adminReportList" class="response-history"></div>
+    </div>
+  </div>
+
+  <!-- Users -->
+  <div class="sub-panel" data-role="admin" data-panel="users">
+    <div class="panel-card">
+      <h2>Users</h2>
+      <div class="panel-card-header" style="margin-top:6px;"><span class="hint">All registered donors</span></div>
+      <div id="adminUsersDonorList"></div>
+      <div class="panel-card-header" style="margin-top:22px;"><span class="hint">All authorised hospitals</span></div>
+      <div id="adminUsersHospitalList"></div>
+    </div>
+  </div>
+
+  <!-- Analytics -->
+  <div class="sub-panel" data-role="admin" data-panel="analytics">
+    <div class="panel-card">
+      <h2>Analytics</h2>
+      <div class="stat-grid" id="adminStatGrid" style="margin-top:16px;"></div>
+      <div class="section-card-header" style="margin-top:10px;"><h3>District-wide Blood Inventory</h3></div>
+      <div class="inventory-grid" id="adminInventoryGrid"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="apple-footer">
+  <p>&copy; 2026 LifeLink Project. Prototype for the Colombo District Emergency Response pilot proposal.</p>
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

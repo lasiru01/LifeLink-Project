@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeLink — Connection Check</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+<style>
+  .check-wrap { max-width:760px; margin:30px auto 80px; padding:0 20px; }
+  .check-row { display:flex; gap:14px; padding:16px 0; border-bottom:1px solid rgba(0,0,0,.07); align-items:flex-start; }
+  .check-row:last-child { border-bottom:none; }
+  .check-icon { font-size:1.3rem; line-height:1.2; width:28px; flex-shrink:0; text-align:center; }
+  .check-body { flex:1; }
+  .check-title { font-weight:700; font-size:.95rem; margin-bottom:3px; }
+  .check-detail { font-size:.84rem; color:#6e6e73; line-height:1.6; }
+  .check-fix { font-size:.84rem; background:#fff8ec; border:1px solid rgba(247,127,0,.3); color:#8a5300;
+               border-radius:10px; padding:11px 14px; margin-top:8px; line-height:1.65; }
+  .check-fix b { color:#7a4900; }
+  .summary { border-radius:16px; padding:20px 24px; margin-bottom:8px; font-size:.95rem; line-height:1.6; }
+  .summary.good { background:#f0fbf3; border:1px solid rgba(20,140,60,.25); color:#1c7a3d; }
+  .summary.bad { background:#fff2f2; border:1px solid rgba(217,4,41,.25); color:#b3122a; }
+  code { background:rgba(0,0,0,.06); padding:2px 6px; border-radius:5px; font-size:.85em; }
+</style>
+</head>
+<body>
+
+<nav class="apple-nav">
+  <div class="nav-content">
+    <a href="index.html" class="nav-logo">Life<span>Link</span></a>
+    <span class="nav-tag">Connection Check</span>
+  </div>
+</nav>
+
+<div class="check-wrap">
+  <div class="panel-card">
+    <h2>Connection Check</h2>
+    <p class="panel-sub">This tests each part of your Firebase setup and tells you exactly what to fix.</p>
+    <div id="summary"></div>
+    <div id="results"></div>
+    <div class="form-action">
+      <button class="apple-btn btn-ghost" onclick="location.reload()">Run again</button>
+      <a class="apple-btn btn-primary" href="index.html" style="text-decoration:none;">Back to LifeLink</a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+const results = document.getElementById('results');
+const summary = document.getElementById('summary');
+let failures = 0;
+
+function row(state, title, detail, fix) {
+  if (state === 'fail') failures += 1;
+  const icon = state === 'ok' ? '✅' : state === 'warn' ? '⚠️' : '❌';
+  results.insertAdjacentHTML('beforeend', `
+    <div class="check-row">
+      <div class="check-icon">${icon}</div>
+      <div class="check-body">
+        <div class="check-title">${title}</div>
+        <div class="check-detail">${detail}</div>
+        ${fix ? `<div class="check-fix">${fix}</div>` : ''}
+      </div>
+    </div>`);
+}
+
+const CONSOLE = 'https://console.firebase.google.com';
+
+async function run() {
+  /* ---------- 1. config.js ---------- */
+  let cfg = null;
+  try {
+    const mod = await import('./js/config.js');
+    cfg = mod.firebaseConfig;
+    if (!cfg) {
+      row('fail', 'Your keys file (js/config.js)',
+        'The file loaded, but it does not export <code>firebaseConfig</code>.',
+        '<b>Fix:</b> open <code>js/config.js</code> and make sure the line reads '
+        + '<code>export const firebaseConfig = {</code> — the word <code>export</code> must be there.');
+      return finish();
+    }
+    if (String(cfg.apiKey).includes('PASTE_')) {
+      row('fail', 'Your keys file (js/config.js)', 'Still contains placeholder text.',
+        '<b>Fix:</b> paste your real keys from ' + CONSOLE + ' → gear icon → Project settings → Your apps.');
+      return finish();
+    }
+    row('ok', 'Your keys file (js/config.js)', `Loaded. Project: <code>${cfg.projectId}</code>`);
+  } catch (err) {
+    row('fail', 'Your keys file (js/config.js)', `The file could not be read: ${err.message}`,
+      '<b>Fix:</b> check that <code>config.js</code> is inside the <code>js</code> folder, and that '
+      + 'its first line reads <code>export const firebaseConfig = {</code> and its last line <code>};</code>');
+    return finish();
+  }
+
+  /* ---------- 2. Firebase libraries ---------- */
+  let initializeApp, getAuth, signInAnonymously, signInWithEmailAndPassword;
+  let getFirestore, collection, getDocs, doc, getDoc, limit, query;
+  try {
+    ({ initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'));
+    ({ getAuth, signInAnonymously, signInWithEmailAndPassword } =
+      await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js'));
+    ({ getFirestore, collection, getDocs, doc, getDoc, limit, query } =
+      await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'));
+    row('ok', 'Internet connection to Firebase', 'The Firebase libraries downloaded successfully.');
+  } catch (err) {
+    row('fail', 'Internet connection to Firebase', 'Could not download the Firebase libraries.',
+      '<b>Fix:</b> check that you are online, and that no firewall or ad-blocker is blocking '
+      + '<code>gstatic.com</code>. Try pausing your Brave shields for this page.');
+    return finish();
+  }
+
+  /* ---------- 3. start the app ---------- */
+  let auth; let fdb;
+  try {
+    const app = initializeApp(cfg);
+    auth = getAuth(app);
+    fdb = getFirestore(app);
+    row('ok', 'Firebase project started', 'Your keys were accepted.');
+  } catch (err) {
+    row('fail', 'Firebase project started', err.message,
+      '<b>Fix:</b> one of the values in <code>js/config.js</code> is wrong. '
+      + 'Copy them again from the Firebase console.');
+    return finish();
+  }
+
+  /* ---------- 4. Anonymous sign-in ---------- */
+  try {
+    await signInAnonymously(auth);
+    row('ok', 'Anonymous sign-in is ON',
+      'Donors and hospitals can use the app. This is what the original prototype did.');
+  } catch (err) {
+    const off = String(err.code).includes('operation-not-allowed');
+    row('fail', 'Anonymous sign-in is OFF', `Firebase said: <code>${err.code}</code>`,
+      off ? '<b>Fix:</b> go to ' + CONSOLE + ' → your project → <b>Build → Authentication</b> → '
+        + '<b>Sign-in method</b> tab → click <b>Add new provider</b> → choose <b>Anonymous</b> → '
+        + 'turn it <b>on</b> → <b>Save</b>.'
+        : `<b>Fix:</b> ${err.message}`);
+  }
+
+  /* ---------- 5. Email/Password sign-in ---------- */
+  try {
+    await signInWithEmailAndPassword(auth, 'does-not-exist@lifelink.test', 'not-a-real-password');
+    row('ok', 'Email/Password sign-in is ON', 'The admin login can work.');
+  } catch (err) {
+    const code = String(err.code);
+    if (code.includes('operation-not-allowed')) {
+      row('fail', 'Email/Password sign-in is OFF', `Firebase said: <code>${err.code}</code>`,
+        '<b>Fix:</b> go to ' + CONSOLE + ' → <b>Build → Authentication</b> → <b>Sign-in method</b> tab → '
+        + 'click <b>Email/Password</b> → turn on the <b>first</b> toggle → <b>Save</b>.');
+    } else {
+      row('ok', 'Email/Password sign-in is ON',
+        'Confirmed (the test account correctly does not exist).');
+    }
+  }
+
+  /* ---------- 6. Firestore rules ---------- */
+  try {
+    await getDocs(query(collection(fdb, 'donors'), limit(1)));
+    row('ok', 'Database rules are published', 'The app can read and write your data.');
+  } catch (err) {
+    const denied = String(err.code).includes('permission-denied');
+    row('fail', 'Database rules are blocking the app', `Firebase said: <code>${err.code}</code>`,
+      denied ? '<b>Fix:</b> go to ' + CONSOLE + ' → <b>Build → Firestore Database</b> → <b>Rules</b> tab → '
+        + 'delete everything in the box → open the file <code>firestore.rules</code> from your '
+        + 'lifelink-web folder, copy <b>all</b> of it, paste it in → click <b>Publish</b>.'
+        : '<b>Fix:</b> make sure you created the Firestore database '
+        + '(<b>Build → Firestore Database → Create database</b>).');
+  }
+
+  /* ---------- 7. does an admin exist? ---------- */
+  try {
+    const snap = await getDoc(doc(fdb, 'config', 'admin'));
+    if (snap.exists()) {
+      row('ok', 'Administrator account', `Already created: <code>${snap.data().email || 'unknown'}</code>. `
+        + 'Use the Admin tab → Sign In with that email.');
+    } else {
+      row('warn', 'Administrator account', 'Not created yet — this is normal on a fresh setup.',
+        'On the <b>Admin</b> tab, click <b>“First time? Create the administrator”</b> under the '
+        + 'Sign In button, then choose an email like <code>admin@lifelink.lk</code> and a password '
+        + 'of at least 6 characters. Use a proper email with a dot in it — <code>admin@123</code> '
+        + 'will be rejected.');
+    }
+  } catch (err) {
+    row('warn', 'Administrator account', 'Could not check — usually because the rules above need publishing.');
+  }
+
+  finish();
+}
+
+function finish() {
+  summary.innerHTML = failures === 0
+    ? '<div class="summary good"><b>Everything is connected.</b> '
+      + 'If you have not made an administrator yet, follow the note above, then go back to LifeLink.</div>'
+    : `<div class="summary bad"><b>${failures} thing${failures > 1 ? 's need' : ' needs'} fixing.</b> `
+      + 'Work through the orange boxes below in order, then press <b>Run again</b>.</div>';
+}
+
+run().catch((err) => {
+  row('fail', 'Unexpected problem', err.message, '');
+  finish();
+});
+</script>
+</body>
+</html>

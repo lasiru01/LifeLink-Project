@@ -1,0 +1,247 @@
+/* ============================================================
+   BASE
+   ============================================================ */
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; -webkit-font-smoothing:antialiased; }
+body { background-color:#fbfbfd; color:#1d1d1f; overflow-x:hidden; }
+a { color:inherit; }
+button { font-family:inherit; cursor:pointer; }
+
+/* ============================================================
+   SPLASH SCREEN (big logo on load, then falls into the home page)
+   ============================================================ */
+.splash-screen {
+  position:fixed; inset:0; z-index:99999;
+  background:radial-gradient(circle at 50% 45%, #fff5f5, #fbfbfd 70%);
+  display:flex; align-items:center; justify-content:center;
+  animation: splashFadeOut .7s ease forwards; animation-delay:1.35s;
+}
+.splash-logo { display:flex; flex-direction:column; align-items:center; gap:6px; }
+.splash-logo svg { width:78px; height:auto; opacity:0; animation: splashPop .6s cubic-bezier(.34,1.56,.64,1) forwards; animation-delay:.05s; }
+.splash-text { font-size:2.8rem; font-weight:800; letter-spacing:-1.2px; color:#1d1d1f; opacity:0; animation: splashPop .6s cubic-bezier(.34,1.56,.64,1) forwards; animation-delay:.22s; }
+.splash-text span { color:#d90429; font-size:1.18em; position:relative; top:0.14em; margin-left:1px; }
+.splash-tag { font-size:.78rem; font-weight:600; color:#9a9a9e; text-transform:uppercase; letter-spacing:1.4px; opacity:0; animation: splashPop .6s ease forwards; animation-delay:.4s; }
+
+@keyframes splashPop {
+  from { opacity:0; transform:scale(.7) translateY(14px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+@keyframes splashFadeOut {
+  0%   { opacity:1; transform:scale(1) translateY(0); }
+  100% { opacity:0; transform:scale(.88) translateY(40px); visibility:hidden; }
+}
+
+/* ============================================================
+   NAV + MINI HERO
+   ============================================================ */
+.apple-nav { position:sticky; top:0; width:100%; height:52px; background:rgba(255,255,255,.85); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid rgba(0,0,0,.08); z-index:500; }
+.nav-content { max-width:1100px; margin:0 auto; height:100%; display:flex; justify-content:space-between; align-items:center; padding:0 22px; }
+.nav-logo { font-weight:700; font-size:1.25rem; color:#1d1d1f; text-decoration:none; letter-spacing:-0.5px; display:inline-flex; align-items:baseline; }
+.nav-logo span { color:#d90429; font-size:1.55em; font-weight:800; position:relative; top:0.18em; margin-left:1px; }
+.nav-tag { font-size:.75rem; color:#86868b; font-weight:600; text-transform:uppercase; letter-spacing:.6px; }
+
+.hero-illustration { display:flex; justify-content:center; margin-bottom:10px; }
+.hero-illustration svg { width:130px; height:auto; }
+.hero-mini { max-width:700px; margin:0 auto; text-align:center; padding:44px 20px 20px; }
+.hero-tag { color:#d90429; font-size:.8rem; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; display:block; margin-bottom:10px; }
+.hero-mini h1 { font-size:2rem; font-weight:800; letter-spacing:-1px; margin-bottom:8px; }
+.hero-mini p { color:#6e6e73; font-size:.95rem; }
+
+/* Shown until Firebase keys are pasted into js/config.js */
+.config-banner { max-width:1060px; margin:16px auto 0; background:#fff8ec; border:1px solid rgba(247,127,0,.35); color:#8a5300; border-radius:14px; padding:14px 18px; font-size:.85rem; line-height:1.6; }
+.config-banner code { background:rgba(0,0,0,.06); padding:2px 6px; border-radius:5px; font-size:.82rem; }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.apple-btn { display:inline-block; border-radius:980px; font-size:.9rem; font-weight:500; padding:11px 22px; text-decoration:none; border:none; cursor:pointer; transition:all .25s ease; }
+.btn-primary { background-color:#d90429; color:#fff; }
+.btn-primary:hover { background-color:#ef233c; transform:scale(1.02); }
+.btn-primary:disabled { background-color:#d0d0d5; cursor:not-allowed; transform:none; }
+.btn-secondary { background:#fff; color:#1d1d1f; border:1px solid rgba(0,0,0,.12); }
+.btn-secondary:hover { background:#f5f5f7; }
+.btn-ghost { background:transparent; border:1px solid rgba(0,0,0,.15); color:#1d1d1f; }
+.btn-ghost:hover { background:#f5f5f7; }
+.btn-danger { background:#fff; color:#d90429; border:1px solid rgba(217,4,41,.35); }
+.btn-danger:hover { background:#fff5f5; }
+.btn-small { padding:6px 14px; font-size:.76rem; }
+.btn-large { width:100%; padding:13px; font-size:.95rem; }
+.btn-accept { background:#1c7a3d; color:#fff; }
+.btn-accept:hover { background:#219049; }
+.btn-decline { background:#fff; color:#6e6e73; border:1px solid rgba(0,0,0,.15); }
+.btn-decline:hover { background:#f5f5f7; }
+
+/* ============================================================
+   ROLE TABS (top-level: Donor / Hospital / Admin)
+   ============================================================ */
+.role-tabs-bar { position:sticky; top:52px; background:#fff; border-bottom:1px solid rgba(0,0,0,.08); z-index:400; }
+.role-tabs-inner { max-width:1100px; margin:0 auto; display:flex; gap:6px; padding:10px 20px; overflow-x:auto; }
+.role-tab { display:flex; align-items:center; gap:8px; padding:10px 20px; border-radius:980px; border:1px solid transparent; background:#f5f5f7; color:#515154; font-weight:600; font-size:.9rem; white-space:nowrap; }
+.role-tab .rt-ic { font-size:1rem; }
+.role-tab:hover { background:#eee; }
+.role-tab.active { background:#1d1d1f; color:#fff; }
+
+.role-main { max-width:1100px; margin:0 auto; padding:26px 20px 70px; }
+.role-view { display:none; }
+.role-view.active { display:block; }
+
+/* ============================================================
+   SUB TABS
+   ============================================================ */
+.sub-tabs { display:flex; gap:6px; overflow-x:auto; padding-bottom:14px; margin-bottom:20px; border-bottom:1px solid rgba(0,0,0,.08); }
+.sub-tab { padding:8px 16px; border-radius:980px; border:1px solid rgba(0,0,0,.1); background:#fff; color:#515154; font-size:.82rem; font-weight:600; white-space:nowrap; }
+.sub-tab:hover { border-color:rgba(217,4,41,.3); color:#d90429; }
+.sub-tab.active { background:#fff5f5; border-color:#d90429; color:#d90429; }
+
+.sub-panel { display:none; }
+.sub-panel.active { display:block; }
+
+/* ============================================================
+   PANEL CARDS
+   ============================================================ */
+.panel-card { background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:22px; padding:32px; box-shadow:0 6px 20px rgba(0,0,0,.03); margin-bottom:18px; }
+.panel-narrow { max-width:520px; }
+.panel-card h2 { font-size:1.4rem; font-weight:700; margin-bottom:6px; letter-spacing:-.5px; }
+.panel-sub { color:#6e6e73; font-size:.87rem; margin-bottom:22px; }
+.panel-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+.panel-card-header h2 { margin-bottom:0; }
+.hint { font-size:.76rem; color:#9a9a9e; }
+.empty-state { text-align:center; color:#86868b; font-size:.9rem; padding:26px 10px; }
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.input-group { display:flex; flex-direction:column; gap:7px; }
+.input-group.full-width { grid-column:span 2; }
+.input-group label { font-size:.82rem; font-weight:600; }
+.input-group input, .input-group select, .mini-select { padding:11px 15px; border-radius:11px; border:1px solid rgba(0,0,0,.15); background:#fbfbfd; font-size:.9rem; outline:none; transition:all .2s ease; }
+.input-group input:focus, .input-group select:focus { border-color:#d90429; background:#fff; }
+.input-group input[type="file"] { padding:8px 10px; background:#fff; }
+.input-group input[type="file"]::file-selector-button { background:#1d1d1f; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:.78rem; margin-right:10px; }
+.input-group small { color:#86868b; font-size:.72rem; }
+.form-action { margin-top:20px; }
+.mini-select { padding:8px 12px; font-size:.82rem; }
+
+.consent-box { grid-column:span 2; background:#fbfbfd; border:1px solid rgba(0,0,0,.1); border-radius:14px; padding:15px 17px; display:flex; gap:12px; align-items:flex-start; }
+.consent-box input[type="checkbox"] { margin-top:3px; width:16px; height:16px; accent-color:#d90429; flex-shrink:0; }
+.consent-box label { font-size:.8rem; color:#515154; line-height:1.5; }
+
+.demo-hint { font-size:.74rem; color:#9a9a9e; margin-top:2px; margin-bottom:6px; }
+
+/* Verification document preview */
+.doc-thumb { width:56px; height:56px; border-radius:10px; object-fit:cover; border:1px solid rgba(0,0,0,.1); flex-shrink:0; }
+.doc-row { display:flex; align-items:center; gap:12px; }
+.doc-none { font-size:.74rem; color:#9a9a9e; font-style:italic; }
+
+/* Matching criteria checklist */
+.criteria-list { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.criteria-chip { font-size:.68rem; font-weight:600; padding:3px 9px; border-radius:20px; display:inline-flex; align-items:center; gap:4px; }
+.criteria-chip.pass { background:#f0fbf3; color:#1c7a3d; }
+.criteria-chip.fail { background:#f4f4f6; color:#9a9a9e; }
+.notified-tag { background:#fff5f5; color:#d90429; font-weight:700; font-size:.68rem; padding:4px 10px; border-radius:20px; white-space:nowrap; }
+.rejection-note { font-size:.78rem; color:#b3122a; background:#fff2f2; border:1px solid rgba(217,4,41,.15); border-radius:10px; padding:9px 12px; margin-top:6px; }
+.verify-row { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; padding:14px 4px; border-bottom:1px solid rgba(0,0,0,.06); flex-wrap:wrap; }
+.verify-row:last-child { border-bottom:none; }
+.verify-actions { display:flex; flex-direction:column; gap:6px; min-width:210px; }
+.verify-actions .reject-row { display:flex; gap:6px; }
+.reject-reason-input { flex:1; padding:7px 10px; border-radius:9px; border:1px solid rgba(0,0,0,.15); font-size:.76rem; }
+.login-switch { text-align:center; font-size:.84rem; color:#6e6e73; margin-top:18px; }
+.link-btn { background:none; border:none; color:#d90429; font-weight:700; font-size:.84rem; text-decoration:underline; padding:0; }
+.link-btn:hover { color:#ef233c; }
+.demo-fine { font-size:.7rem; color:#9a9a9e; margin-top:6px; }
+
+/* ============================================================
+   INLINE MESSAGES
+   ============================================================ */
+.inline-msg { border-radius:14px; padding:13px 17px; font-size:.83rem; line-height:1.5; margin-top:15px; display:none; }
+.inline-msg.show { display:block; }
+.inline-msg.info { background:#f2f6ff; color:#1d3f8f; border:1px solid rgba(30,70,200,.15); }
+.inline-msg.success { background:#f0fbf3; color:#1c7a3d; border:1px solid rgba(20,140,60,.18); }
+.inline-msg.error { background:#fff2f2; color:#b3122a; border:1px solid rgba(217,4,41,.2); }
+.inline-msg.warning { background:#fff8ec; color:#8a5300; border:1px solid rgba(247,127,0,.25); }
+
+/* ============================================================
+   STATUS BADGES / CHIPS
+   ============================================================ */
+.status-badge { display:inline-flex; align-items:center; gap:5px; font-size:.7rem; font-weight:700; padding:4px 11px; border-radius:20px; text-transform:uppercase; letter-spacing:.3px; }
+.status-pending { background:#fff8ec; color:#8a5300; }
+.status-rejected { background:#fff2f2; color:#b3122a; }
+.status-verified { background:#f0fbf3; color:#1c7a3d; }
+.status-eligible { background:#f0fbf3; color:#1c7a3d; }
+.status-ineligible { background:#f4f4f6; color:#6e6e73; }
+
+.chip { font-size:.66rem; font-weight:700; padding:3px 10px; border-radius:20px; white-space:nowrap; }
+.chip.critical { background:#fff2f2; color:#d90429; }
+.chip.moderate { background:#fff8ec; color:#8a5300; }
+.chip.ok { background:#f0fbf3; color:#1c7a3d; }
+
+/* ============================================================
+   PROFILE ROWS
+   ============================================================ */
+.profile-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(0,0,0,.06); font-size:.87rem; }
+.profile-row:last-child { border-bottom:none; }
+.profile-row span:first-child { color:#86868b; }
+.profile-row span:last-child { font-weight:600; text-align:right; }
+
+.progress-track { height:8px; background:#f0f0f2; border-radius:20px; margin-top:14px; overflow:hidden; }
+.progress-fill { height:100%; background:linear-gradient(90deg,#d90429,#ef233c); border-radius:20px; transition:width .4s ease; }
+.eligibility-note { font-size:.82rem; color:#6e6e73; margin-top:10px; line-height:1.5; }
+.demo-tools { margin-top:18px; padding-top:16px; border-top:1px dashed rgba(0,0,0,.12); }
+.demo-tools p { font-size:.7rem; color:#9a9a9e; margin-bottom:8px; text-transform:uppercase; letter-spacing:.5px; font-weight:600; }
+.data-actions { display:flex; gap:10px; flex-wrap:wrap; }
+
+/* ============================================================
+   STAT / INVENTORY CARDS
+   ============================================================ */
+.stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:6px; }
+.stat-card { background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:18px; padding:20px; box-shadow:0 4px 14px rgba(0,0,0,.03); }
+.stat-card.accent { background:linear-gradient(135deg,#fff 0%,#fff5f5 100%); border-color:rgba(217,4,41,.15); }
+.stat-label { font-size:.76rem; color:#86868b; font-weight:600; margin-bottom:6px; }
+.stat-value { font-size:1.7rem; font-weight:800; letter-spacing:-.5px; }
+.stat-sub { font-size:.7rem; color:#1c7a3d; margin-top:5px; font-weight:600; }
+
+.inventory-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.inv-card { border:1px solid rgba(0,0,0,.08); border-radius:15px; padding:14px; text-align:center; background:#fbfbfd; }
+.inv-card .inv-group { font-size:1rem; font-weight:800; color:#d90429; }
+.inv-card .inv-count { font-size:1.4rem; font-weight:800; margin:3px 0; }
+.inv-card .inv-units { font-size:.66rem; color:#86868b; text-transform:uppercase; }
+.inv-bar { height:5px; background:#eee; border-radius:10px; margin-top:8px; overflow:hidden; }
+.inv-bar-fill { height:100%; }
+.inv-bar-fill.low { background:#f77f00; }
+.inv-bar-fill.critical { background:#d90429; }
+.inv-bar-fill.ok { background:#1c7a3d; }
+.inv-controls { display:flex; justify-content:center; gap:6px; margin-top:9px; }
+.inv-controls button { width:24px; height:24px; border-radius:50%; border:1px solid rgba(0,0,0,.15); background:#fff; font-size:.85rem; line-height:1; }
+.inv-controls button:hover { background:#f5f5f7; }
+
+/* ============================================================
+   LIST ROWS (requests, donors, hospitals, users, history)
+   ============================================================ */
+.list-row { display:flex; align-items:center; justify-content:space-between; padding:14px 4px; border-bottom:1px solid rgba(0,0,0,.06); gap:14px; flex-wrap:wrap; }
+.list-row:last-child { border-bottom:none; }
+.lr-main { font-size:.87rem; font-weight:600; }
+.lr-sub { font-size:.76rem; color:#86868b; margin-top:2px; }
+.lr-actions { display:flex; gap:8px; flex-wrap:wrap; }
+
+.notif-list { display:flex; flex-direction:column; gap:10px; }
+.notif-item { background:#fbfbfd; border:1px solid rgba(0,0,0,.06); border-radius:13px; padding:13px 16px; font-size:.83rem; line-height:1.5; }
+.notif-item b { display:block; margin-bottom:2px; font-size:.85rem; }
+
+.response-history { display:flex; flex-direction:column; gap:10px; }
+.response-item { font-size:.83rem; background:#fbfbfd; border:1px solid rgba(0,0,0,.06); border-radius:12px; padding:11px 15px; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.apple-footer { border-top:1px solid rgba(0,0,0,.08); padding:28px 20px; text-align:center; color:#86868b; font-size:.8rem; background:#f5f5f7; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:760px) {
+  .form-grid { grid-template-columns:1fr; }
+  .input-group.full-width, .consent-box { grid-column:span 1; }
+  .stat-grid { grid-template-columns:repeat(2,1fr); }
+  .inventory-grid { grid-template-columns:repeat(2,1fr); }
+  .hero-mini h1 { font-size:1.6rem; }
+}
