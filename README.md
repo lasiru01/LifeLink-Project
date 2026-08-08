@@ -5,7 +5,8 @@ can help. Three roles in one place: donors register and respond, hospitals
 broadcast shortage alerts, and an administrator verifies everyone.
 
 **Live:** https://lifelink-0002.web.app
-https://lifelink-0002.web.app
+
+![image alt](https://github.com/lasiru01/LifeLink-Project/blob/d0b4443ea6e63e535de96c7f57e3071baf262840/Untitled%20-%20August%2008%2C%202026%20at%2023.12.34.png)
 
 Built for the Colombo District Emergency Response pilot proposal — Team Spartans.
 
